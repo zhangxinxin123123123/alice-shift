@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>多娜多娜 · 横向人材出勤表</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pink:#ff3f91;--hot:#ff006e;--cyan:#18f7ff;--purple:#8d5cff;
+  --dark:#050611;--panel:#11101b;--yellow:#ffd84d;--lime:#b8ff2c;
+}
+body{
+  min-height:100vh;
+  font-family:'Segoe UI','Microsoft YaHei','Poppins','Courier New',monospace;
+  background:
+    radial-gradient(circle at 8% 8%,rgba(255,0,110,.24),transparent 26%),
+    radial-gradient(circle at 92% 18%,rgba(24,247,255,.20),transparent 28%),
+    linear-gradient(135deg,#03040b 0%,#120717 50%,#040711 100%);
+  padding:14px;
+  color:#ffd6e8;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.026) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.026) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.95),transparent 88%);
+}
+.dona-panel{
+  width:100%;max-width:1440px;margin:0 auto;
+  background:rgba(8,8,18,.88);
+  border:2px solid var(--pink);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 0 34px rgba(255,0,110,.42),0 0 56px rgba(24,247,255,.13),inset 0 0 20px rgba(141,92,255,.16);
+}
+.top-bar{
+  background:linear-gradient(90deg,#070711,#1b081d 55%,#061923);
+  border-bottom:1px solid rgba(24,247,255,.55);
+  padding:8px 14px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.game-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-weight:900;letter-spacing:2px}
+.dona{
+  font-size:1.42rem;color:#fff;
+  text-shadow:3px 0 var(--hot),-3px 0 var(--cyan),0 0 12px var(--pink);
+}
+.alice{
+  font-size:.92rem;border:1px solid var(--cyan);
+  background:rgba(24,247,255,.08);color:#baffff;
+  padding:5px 12px;border-radius:999px;box-shadow:0 0 10px rgba(24,247,255,.25);
+}
+.sys-menu{display:flex;gap:9px;flex-wrap:wrap}
+.sys-menu span,.cyber-btn{
+  font-family:inherit;font-weight:900;color:#070711;
+  background:linear-gradient(180deg,#ffec5f,#ff8a00);
+  border:0;border-radius:7px;padding:7px 13px;
+  box-shadow:3px 3px 0 var(--hot);cursor:pointer;
+}
+.cyber-btn{color:#eaffff;background:linear-gradient(180deg,rgba(24,247,255,.25),rgba(255,0,110,.22));border:1px solid var(--cyan)}
+.cyber-btn:hover,.sys-menu span:hover{filter:brightness(1.15);box-shadow:3px 3px 0 var(--cyan),0 0 12px rgba(24,247,255,.35)}
+.header-line{
+  padding:9px 14px 8px;
+  background:linear-gradient(90deg,rgba(255,0,110,.16),rgba(24,247,255,.05),transparent);
+  border-bottom:1px dashed rgba(255,63,145,.7);
+  display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;
+}
+.header-line h1{
+  font-size:1.38rem;color:#ffb6d2;text-shadow:2px 2px 0 #6d1235,0 0 14px var(--hot);letter-spacing:4px;
+}
+.header-line small{color:#79ffff;letter-spacing:2px}
+.toolbar{
+  padding:8px 14px;background:rgba(18,16,28,.82);
+  border-bottom:1px solid rgba(255,63,145,.35);
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.count-box{
+  display:flex;gap:7px;align-items:center;border:1px solid rgba(255,216,77,.55);
+  background:rgba(255,216,77,.08);border-radius:10px;padding:6px 9px;color:#fff1a8;font-size:.78rem;font-weight:900;
+}
+.count-box input{width:62px;border:1px solid rgba(24,247,255,.55);background:#080812;color:#fff;border-radius:8px;padding:6px;text-align:center;font-weight:900}
+.roster{padding:10px 14px 16px;display:flex;flex-direction:column;gap:8px}
+.talent-row{
+  position:relative;display:grid;grid-template-columns:82px 1.05fr .85fr 1.15fr .9fr auto;gap:8px;align-items:start;
+  min-height:0;padding:8px 8px 8px 10px;
+  background:linear-gradient(90deg,rgba(29,20,43,.96),rgba(10,9,20,.96));
+  border:1px solid rgba(255,63,145,.86);border-left:8px solid var(--pink);
+  border-radius:12px;box-shadow:4px 4px 0 rgba(255,0,110,.42),0 0 14px rgba(24,247,255,.06);
+  overflow:hidden;cursor:pointer;
+}
+.talent-row:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 0 40%,rgba(24,247,255,.10) 43%,transparent 47%);
+  transform:translateX(-82%);transition:.45s;
+}
+.talent-row:hover{border-color:var(--cyan);box-shadow:7px 7px 0 rgba(24,247,255,.45),0 0 22px rgba(255,0,110,.35)}
+.talent-row:hover:before{transform:translateX(100%)}
+.avatar-box{
+  position:relative;z-index:1;height:82px;border-radius:10px;overflow:hidden;
+  border:2px solid rgba(24,247,255,.74);background:linear-gradient(135deg,rgba(255,63,145,.18),rgba(24,247,255,.10));
+  display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 18px rgba(24,247,255,.18);
+}
+.avatar-box img{width:100%;height:100%;object-fit:cover;display:none}
+.avatar-placeholder{font-size:.62rem;color:#baffff;text-align:center;padding:5px;line-height:1.25}
+.avatar-input{display:none}
+.avatar-btn{
+  position:absolute;left:5px;right:5px;bottom:5px;z-index:3;
+  border:1px solid rgba(255,255,255,.45);background:rgba(5,6,17,.78);color:#fff;
+  border-radius:999px;padding:3px 5px;font-size:.58rem;font-weight:900;cursor:pointer;
+}
+.info-main,.time-price,.tag-zone,.attr-zone,.status-zone{position:relative;z-index:1}
+.info-main{display:flex;flex-direction:column;gap:5px}
+.serial{align-self:flex-start;background:#04050c;border:1px solid var(--cyan);color:var(--cyan);padding:2px 7px;border-radius:6px;font-size:.62rem}
+.card-name{
+  font-size:1rem;font-weight:900;color:#fff;background:rgba(255,63,145,.18);border-left:4px solid var(--pink);
+  padding:5px 8px;border-radius:7px;line-height:1.15;text-shadow:0 0 8px rgba(255,63,145,.65);
+}
+.memo{font-size:.68rem;color:#ffb8d4;line-height:1.22;border:1px dashed rgba(255,63,145,.35);border-radius:7px;padding:4px 6px;background:rgba(255,63,145,.07);max-height:34px;overflow:auto}
+.time-price{display:flex;flex-direction:column;gap:5px}
+.time-badge,.price-badge{
+  border-radius:8px;padding:6px 8px;font-weight:900;min-height:0;font-size:.76rem;
+}
+.time-badge{background:rgba(24,247,255,.08);border:1px solid rgba(24,247,255,.42);color:#baffff}
+.price-badge{background:rgba(255,216,77,.13);border:1px solid rgba(255,216,77,.58);color:var(--yellow);text-shadow:0 0 8px rgba(255,216,77,.45)}
+.zone-title{font-size:.6rem;color:#79ffff;letter-spacing:1.2px;margin-bottom:4px;font-weight:900}
+.tag-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;max-height:58px;overflow:auto;padding-right:2px}
+.attr-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.attr-item{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:4px}
+.attr-label{font-size:.64rem;color:#ffadd0;font-weight:900}
+select{
+  width:100%;appearance:none;border:1px solid rgba(255,63,145,.65);background:#130d1b;color:#ffd6e8;
+  border-radius:999px;padding:4px 22px 4px 8px;font-size:.65rem;font-weight:900;outline:none;
+  box-shadow:inset 0 0 8px rgba(255,0,110,.12);
+  background-image:linear-gradient(45deg,transparent 50%,var(--cyan) 50%),linear-gradient(135deg,var(--cyan) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+}
+select:focus{border-color:var(--cyan);box-shadow:0 0 10px rgba(24,247,255,.38)}
+.status-zone{display:flex;flex-direction:column;gap:5px;min-width:72px}
+.status-pill{
+  font-size:.68rem;font-weight:900;color:#050711;background:linear-gradient(180deg,#83ffff,#18f7ff);
+  padding:4px 6px;border-radius:7px;box-shadow:2px 2px 0 var(--hot);text-align:center;
+}
+.delete-btn{
+  border:1px solid rgba(255,63,145,.88);background:rgba(255,0,110,.18);color:#ffd6e8;
+  border-radius:8px;padding:5px 7px;font-size:.66rem;font-weight:900;cursor:pointer;
+}
+.delete-btn:hover{background:var(--hot);color:white}
+[contenteditable="true"]{outline:none;cursor:text}
+[contenteditable="true"]:hover{box-shadow:0 0 0 1px var(--cyan);background:rgba(24,247,255,.08)}
+[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--yellow),0 0 14px rgba(255,216,77,.35);background:rgba(255,216,77,.10)}
+@media(max-width:1100px){
+  .talent-row{grid-template-columns:82px 1fr 1fr;grid-auto-rows:auto}
+  .tag-zone,.attr-zone{grid-column:auto}
+  .status-zone{grid-column:1/-1;flex-direction:row;flex-wrap:wrap}
+}
+@media(max-width:680px){
+  body{padding:8px}.dona{font-size:1.2rem}.header-line h1{font-size:1.12rem}
+  .talent-row{grid-template-columns:72px 1fr;gap:7px;padding:7px}
+  .avatar-box{height:72px}
+  .time-price,.tag-zone,.attr-zone,.status-zone{grid-column:1/-1}
+  .tag-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:54px}
+  .attr-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .status-zone{flex-direction:row;flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="dona-panel">
+  <div class="top-bar">
+    <div class="game-title">
+      <span class="dona" contenteditable="true" onclick="event.stopPropagation()">⚡ DONA DONA 人材 LIST ⚡</span>
+      <span class="alice" contenteditable="true" onclick="event.stopPropagation()">ALICE ACADEMY / CYBER SHIFT</span>
+    </div>
+    <div class="sys-menu">
+      <span contenteditable="true" onclick="event.stopPropagation()">人材</span>
+      <span contenteditable="true" onclick="event.stopPropagation()">出勤</span>
+    </div>
+  </div>
+
+  <div class="header-line">
+    <h1 contenteditable="true" onclick="event.stopPropagation()">🔻 横向き人材出勤表 🔻</h1>
+    <small contenteditable="true" onclick="event.stopPropagation()">TAG / STATUS / AVATAR / PARAMETER</small>
+  </div>
+
+  <div class="toolbar">
+    <button class="cyber-btn" onclick="addTalent()">＋ 新增人材</button>
+    <button class="cyber-btn" onclick="removeLastTalent()">－ 删除最后一个</button>
+    <div class="count-box">
+      <span contenteditable="true" onclick="event.stopPropagation()">出勤人数</span>
+      <input id="talentCount" type="number" min="0" value="6" onchange="setTalentCount(this.value)">
+    </div>
+  </div>
+
+  <div class="roster" id="talentGrid"></div>
+</div>
+
+<script>
+const TAGS=['好色','纯洁','顺从','敏感','小恶魔','巨乳','贫乳','童颜','辣妹','萝莉系','姐姐系','病娇','傲娇','元气','清楚','运动部','文化部','安产型','心理病','贫穷','积极','松弛','天然','冷淡','奉仕','治愈','地雷','JK','双马尾','眼镜','猫系','犬系','M气质','S气质','新人','人气','稀有'];
+const RANKS=['S','A','B','C','D'];
+let girls=[
+ {no:'001',name:'✨ 玛薇',memo:'身材吊炸辣妹',time:'⏰ 14:00 ~ 19:00',price:'¥22,000 /h',tags:['好色','巨乳','小恶魔','辣妹'],attrs:{心灵:'B',身材:'S',颜值:'A',技巧:'A'},status:['出勤中','预约可']},
+ {no:'002',name:'🌸 咪兔',memo:'萝莉系 · 可爱系',time:'⏰ 18:00 ~ 21:00',price:'¥25,000 /h',tags:['纯洁','顺从','敏感','新人'],attrs:{心灵:'A',身材:'B',颜值:'A',技巧:'B'},status:['出勤中','预约可']},
+ {no:'003',name:'📚 绚',memo:'04年长腿巨瘦嫩妹妹',time:'⏰ 18:00 ~ 22:00',price:'¥20,000 /h',tags:['运动部','积极','清楚','巨乳'],attrs:{心灵:'B',身材:'S',颜值:'A',技巧:'B'},status:['待机中','预约可']},
+ {no:'004',name:'🍡 芙莲',memo:'模特双马尾妹妹',time:'⏰ 15:00 ~ 20:00',price:'¥18,000 /h',tags:['小恶魔','好色','松弛','双马尾'],attrs:{心灵:'B',身材:'A',颜值:'A',技巧:'A'},status:['出勤中','预约可']},
+ {no:'005',name:'🌙 流萤',memo:'巨乳M妹妹',time:'⏰ 13:00 ~ 18:00',price:'¥18,000 /h',tags:['巨乳','心理病','好色','M气质'],attrs:{心灵:'C',身材:'S',颜值:'A',技巧:'A'},status:['休息前','可询问']},
+ {no:'006',name:'🍬 七海莉莉',memo:'童颜巨乳萝莉',time:'⏰ 20:00 ~ 23:00',price:'🎓 伴游 (另询)',tags:['童颜','敏感','贫穷','顺从'],attrs:{心灵:'A',身材:'A',颜值:'S',技巧:'B'},status:['夜出勤','预约可']}
+];
+
+function makeSelect(list,value){return `<select onclick="event.stopPropagation()">${list.map(x=>`<option ${x===value?'selected':''}>${x}</option>`).join('')}</select>`}
+function rankSelect(value){return makeSelect(RANKS,value)}
+function getNextNo(){return String(document.querySelectorAll('.talent-row').length+1).padStart(3,'0')}
+function defaultGirl(){const n=getNextNo();return {no:n,name:'🆕 新增人材 '+n,memo:'点击编辑备注',time:'⏰ 18:00 ~ 23:00',price:'¥20,000 /h',tags:['新人','人气','JK','猫系'],attrs:{心灵:'B',身材:'B',颜值:'B',技巧:'B'},status:['出勤中','预约可']}}
+function card(g){
+ return `<div class="talent-row" onclick="showDetail(this)">
+   <div class="avatar-box" onclick="event.stopPropagation()">
+     <img class="avatar-img" alt="avatar">
+     <div class="avatar-placeholder" contenteditable="true">点击下方按钮<br>追加动漫头像</div>
+     <input class="avatar-input" type="file" accept="image/*" onchange="loadAvatar(this)">
+     <button class="avatar-btn" onclick="this.previousElementSibling.click();event.stopPropagation();">头像追加</button>
+   </div>
+   <div class="info-main">
+     <div class="serial" contenteditable="true" onclick="event.stopPropagation()">ID ${g.no}</div>
+     <div class="card-name" contenteditable="true" onclick="event.stopPropagation()">${g.name}</div>
+     <div class="memo" contenteditable="true" onclick="event.stopPropagation()">${g.memo}</div>
+   </div>
+   <div class="time-price">
+     <div class="time-badge" contenteditable="true" onclick="event.stopPropagation()">${g.time}</div>
+     <div class="price-badge" contenteditable="true" onclick="event.stopPropagation()">${g.price}</div>
+   </div>
+   <div class="tag-zone">
+     <div class="zone-title" contenteditable="true" onclick="event.stopPropagation()">TAG</div>
+     <div class="tag-list">${g.tags.map(t=>makeSelect(TAGS,t)).join('')}</div>
+   </div>
+   <div class="attr-zone">
+     <div class="zone-title" contenteditable="true" onclick="event.stopPropagation()">PARAMETER</div>
+     <div class="attr-list">
+       ${['心灵','身材','颜值','技巧'].map(k=>`<div class="attr-item"><div class="attr-label" contenteditable="true" onclick="event.stopPropagation()">${k}</div>${rankSelect(g.attrs[k]||'B')}</div>`).join('')}
+     </div>
+   </div>
+   <div class="status-zone">
+     ${g.status.map(s=>`<span class="status-pill" contenteditable="true" onclick="event.stopPropagation()">${s}</span>`).join('')}
+     <button class="delete-btn" onclick="deleteTalent(this);event.stopPropagation();">删除</button>
+   </div>
+ </div>`
+}
+function render(){document.getElementById('talentGrid').innerHTML=girls.map(card).join('');updateCount()}
+function updateCount(){const el=document.getElementById('talentCount');if(el)el.value=document.querySelectorAll('.talent-row').length}
+function readCurrentGirls(){
+ return [...document.querySelectorAll('.talent-row')].map((row,i)=>{
+   const labels=[...row.querySelectorAll('.attr-label')].map(x=>x.innerText.trim());
+   const values=[...row.querySelectorAll('.attr-list select')].map(s=>s.value);
+   let attrs={}; labels.forEach((l,idx)=>attrs[l||['心灵','身材','颜值','技巧'][idx]]=values[idx]||'B');
+   return {
+     no:(row.querySelector('.serial')?.innerText||`ID ${String(i+1).padStart(3,'0')}`).replace(/ID\s*/,'').trim(),
+     name:row.querySelector('.card-name')?.innerText||'新增人材',
+     memo:row.querySelector('.memo')?.innerText||'点击编辑备注',
+     time:row.querySelector('.time-badge')?.innerText||'⏰ 18:00 ~ 23:00',
+     price:row.querySelector('.price-badge')?.innerText||'¥20,000 /h',
+     tags:[...row.querySelectorAll('.tag-list select')].map(s=>s.value),
+     attrs:Object.assign({心灵:'B',身材:'B',颜值:'B',技巧:'B'},attrs),
+     status:[...row.querySelectorAll('.status-pill')].map(s=>s.innerText)
+   }
+ })
+}
+function addTalent(){girls=readCurrentGirls();girls.push(defaultGirl());render()}
+function removeLastTalent(){girls=readCurrentGirls();girls.pop();render()}
+function deleteTalent(btn){btn.closest('.talent-row').remove();girls=readCurrentGirls();updateCount()}
+function setTalentCount(value){let target=Math.max(0,parseInt(value||0));girls=readCurrentGirls();while(girls.length<target)girls.push(defaultGirl());while(girls.length>target)girls.pop();render()}
+function loadAvatar(input){
+ const file=input.files && input.files[0]; if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+   const box=input.closest('.avatar-box');
+   const img=box.querySelector('.avatar-img');
+   const ph=box.querySelector('.avatar-placeholder');
+   img.src=e.target.result; img.style.display='block'; ph.style.display='none';
+ };
+ reader.readAsDataURL(file);
+}
+function showDetail(row){
+ const name=row.querySelector('.card-name').innerText;
+ const memo=row.querySelector('.memo').innerText;
+ const time=row.querySelector('.time-badge').innerText;
+ const price=row.querySelector('.price-badge').innerText;
+ const tags=[...row.querySelectorAll('.tag-list select')].map(s=>s.value).join(' / ');
+ const labels=[...row.querySelectorAll('.attr-label')].map(x=>x.innerText.trim());
+ const ranks=[...row.querySelectorAll('.attr-list select')].map(s=>s.value);
+ const attrs=labels.map((l,i)=>`${l}:${ranks[i]}`).join(' / ');
+ const status=[...row.querySelectorAll('.status-pill')].map(s=>s.innerText).join(' / ');
+ alert(`📖 人材档案\n\n${name}\n${memo}\n${time}\n${price}\n\nTAG：${tags}\n属性：${attrs}\n状态：${status}`);
+}
+render();
+</script>
+</body>
+</html>
